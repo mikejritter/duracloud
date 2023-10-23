@@ -8,6 +8,10 @@
 package org.duracloud.retrieval.mgmt;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -20,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The RetreivalManager manages the retrieval of files from DuraCloud to the
+ * The RetrievalManager manages the retrieval of files from DuraCloud to the
  * local file system.
  *
  * @author: Bill Branan
@@ -40,6 +44,7 @@ public class RetrievalManager implements Runnable {
     private boolean createSpaceDir;
     private boolean applyTimestamps;
     private boolean complete;
+    private final List<Future<?>> taskList;
 
     public RetrievalManager(RetrievalSource source,
                             File contentDir,
@@ -57,6 +62,7 @@ public class RetrievalManager implements Runnable {
         this.outWriter = outWriter;
         this.createSpaceDir = createSpaceDir;
         this.applyTimestamps = applyTimestamps;
+        this.taskList = new ArrayList<>();
 
         // Create thread pool for retrieval workers
         workerPool =
@@ -113,7 +119,8 @@ public class RetrievalManager implements Runnable {
                                                          outWriter,
                                                          createSpaceDir,
                                                          applyTimestamps);
-            workerPool.execute(worker);
+            var future = workerPool.submit(worker);
+            taskList.add(future);
             return true;
         } catch (RejectedExecutionException e) {
             return false;
@@ -122,15 +129,17 @@ public class RetrievalManager implements Runnable {
 
     /**
      * Stops the retrieval, no further files will be retrieved after those
-     * which are in progress have completed.
+     * which are in progress have completed. Waits for completion by joining on each retrieval.
      */
     public void shutdown() {
         logger.info("Closing Retrieval Manager");
         workerPool.shutdown();
 
         try {
-            workerPool.awaitTermination(30, TimeUnit.MINUTES);
-        } catch (InterruptedException e) {
+            for (Future<?> future : taskList) {
+                future.get();
+            }
+        } catch (InterruptedException | ExecutionException e) {
             // Exit wait on interruption
         }
 
