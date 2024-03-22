@@ -9,7 +9,7 @@ package org.duracloud.chunk.manifest.xml;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.duracloud.ChunkType;
 import org.duracloud.ChunksManifestType;
 import org.duracloud.ChunksType;

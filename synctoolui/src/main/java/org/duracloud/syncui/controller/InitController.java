@@ -10,7 +10,7 @@ package org.duracloud.syncui.controller;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.duracloud.syncui.domain.DirectoryConfig;
 import org.duracloud.syncui.domain.DirectoryConfigs;
 import org.duracloud.syncui.service.SyncConfigurationManager;

@@ -37,7 +37,7 @@
         <exclude>org.springframework:spring-beans</exclude>
         <exclude>org.springframework:spring-context</exclude>
         <exclude>aopalliance:aopalliance</exclude>
-        <exclude>commons-lang:commons-lang</exclude>
+        <exclude>org.apache.commons:commons-lang3</exclude>
       </excludes>
     </dependencySet>
   </dependencySets>

@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.duracloud.sync.config.SyncToolConfig;
 import org.duracloud.syncui.config.SyncUIConfig;
 import org.duracloud.syncui.domain.DirectoryConfig;

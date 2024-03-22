@@ -15,7 +15,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import com.thoughtworks.xstream.XStream;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.duracloud.syncui.config.SyncUIConfig;
 import org.duracloud.syncui.domain.SyncProcessState;
 import org.slf4j.Logger;

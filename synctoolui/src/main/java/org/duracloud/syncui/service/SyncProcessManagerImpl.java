@@ -15,7 +15,7 @@ import java.util.concurrent.CountDownLatch;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.event.EventListenerSupport;
 import org.duracloud.client.ContentStore;
 import org.duracloud.client.ContentStoreManager;

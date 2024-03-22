@@ -343,6 +343,12 @@
       <groupId>net.sf.spring-json</groupId>
       <artifactId>spring-json</artifactId>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-lang</groupId>
+          <artifactId>commons-lang</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -408,8 +414,8 @@
     </dependency>
 
     <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
     </dependency>
 
     <!-- for HttpClient -->
@@ -435,6 +441,12 @@
       <artifactId>json-lib</artifactId>
       <classifier>jdk15</classifier>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-lang</groupId>
+          <artifactId>commons-lang</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>

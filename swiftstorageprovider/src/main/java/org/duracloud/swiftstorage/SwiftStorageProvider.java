@@ -30,7 +30,7 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.CopyObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.duracloud.common.constant.Constants;
 import org.duracloud.common.rest.HttpHeaders;
 import org.duracloud.s3storage.S3ProviderUtil;

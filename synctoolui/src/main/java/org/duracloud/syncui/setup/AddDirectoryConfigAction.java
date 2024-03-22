@@ -7,7 +7,7 @@
  */
 package org.duracloud.syncui.setup;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.duracloud.syncui.domain.DirectoryConfig;
 import org.duracloud.syncui.domain.DirectoryConfigForm;
 import org.duracloud.syncui.domain.DirectoryConfigs;
