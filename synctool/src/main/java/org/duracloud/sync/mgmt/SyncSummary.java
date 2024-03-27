@@ -10,10 +10,8 @@ package org.duracloud.sync.mgmt;
 import java.io.File;
 import java.util.Date;
 
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.duracloud.sync.endpoint.SyncResultType;
-import org.joda.time.Period;
-import org.joda.time.format.PeriodFormatter;
-import org.joda.time.format.PeriodFormatterBuilder;
 
 /**
  * A class that describes a completed sync operation.
@@ -21,7 +19,7 @@ import org.joda.time.format.PeriodFormatterBuilder;
  * @author Daniel Bernstein
  */
 public class SyncSummary {
-    public static enum Status {
+    public enum Status {
         SUCCESS, FAILURE
     }
 
@@ -50,20 +48,7 @@ public class SyncSummary {
 
     public String getDurationAsString() {
         long duration = this.stop.getTime() - this.start.getTime();
-        PeriodFormatter daysHoursMinutes = new PeriodFormatterBuilder()
-            .appendDays()
-            .appendSuffix(" day", " days")
-            .appendSeparator(" ")
-            .appendMinutes()
-            .appendSuffix(" min", " min")
-            .appendSeparator(" ")
-            .appendSeconds()
-            .appendSuffix(" sec", " secs")
-            .toFormatter();
-
-        Period period = new Period(duration);
-
-        return daysHoursMinutes.print(period);
+        return DurationFormatUtils.formatDuration(duration, "d'd' H'h' m'm' s's'");
     }
 
     public Date getStart() {
