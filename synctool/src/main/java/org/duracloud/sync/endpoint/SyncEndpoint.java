@@ -10,6 +10,7 @@ package org.duracloud.sync.endpoint;
 import java.io.File;
 import java.util.Iterator;
 
+import org.duracloud.client.MonitoredFile;
 import org.duracloud.error.ContentStoreException;
 
 /**

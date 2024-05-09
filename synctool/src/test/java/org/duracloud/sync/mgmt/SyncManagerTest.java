@@ -15,10 +15,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.duracloud.client.MonitoredFile;
 import org.duracloud.error.ContentStoreException;
 import org.duracloud.sync.SyncTestBase;
 import org.duracloud.sync.endpoint.EndPointListener;
-import org.duracloud.sync.endpoint.MonitoredFile;
 import org.duracloud.sync.endpoint.SyncEndpoint;
 import org.duracloud.sync.endpoint.SyncResultType;
 import org.junit.Before;

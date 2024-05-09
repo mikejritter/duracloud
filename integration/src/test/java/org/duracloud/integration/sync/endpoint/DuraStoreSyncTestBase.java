@@ -16,11 +16,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.duracloud.client.ContentStore;
+import org.duracloud.client.MonitoredFile;
 import org.duracloud.client.util.StoreClientUtil;
 import org.duracloud.error.ContentStoreException;
 import org.duracloud.integration.sync.SyncIntegrationTestBase;
 import org.duracloud.sync.endpoint.DuraStoreSyncEndpoint;
-import org.duracloud.sync.endpoint.MonitoredFile;
 import org.junit.After;
 import org.junit.Assert;
 

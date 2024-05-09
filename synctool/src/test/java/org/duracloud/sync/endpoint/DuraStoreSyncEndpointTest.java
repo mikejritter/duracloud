@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.duracloud.client.ContentStore;
+import org.duracloud.client.MonitoredFile;
 import org.duracloud.common.model.AclType;
 import org.duracloud.common.util.ChecksumUtil;
 import org.easymock.Capture;

@@ -13,7 +13,7 @@ import static org.easymock.EasyMock.isA;
 
 import java.io.File;
 
-import org.duracloud.sync.endpoint.MonitoredFile;
+import org.duracloud.client.MonitoredFile;
 import org.duracloud.sync.endpoint.SyncEndpoint;
 import org.duracloud.sync.endpoint.SyncResultType;
 import org.easymock.EasyMockRunner;

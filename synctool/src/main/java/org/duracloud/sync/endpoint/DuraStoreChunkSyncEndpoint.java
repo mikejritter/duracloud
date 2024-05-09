@@ -22,6 +22,7 @@ import org.duracloud.chunk.manifest.ChunksManifestBean;
 import org.duracloud.chunk.util.ChunksManifestVerifier;
 import org.duracloud.chunk.writer.DuracloudContentWriter;
 import org.duracloud.client.ContentStore;
+import org.duracloud.client.MonitoredFile;
 import org.duracloud.common.retry.Retrier;
 import org.duracloud.domain.Content;
 import org.duracloud.error.ContentStoreException;

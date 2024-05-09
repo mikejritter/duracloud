@@ -14,6 +14,7 @@ import static junit.framework.Assert.assertTrue;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
+import org.duracloud.client.MonitoredFile;
 import org.duracloud.sync.SyncTestBase;
 import org.junit.Test;
 

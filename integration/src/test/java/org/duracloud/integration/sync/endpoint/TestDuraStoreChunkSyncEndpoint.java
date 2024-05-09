@@ -10,9 +10,9 @@ package org.duracloud.integration.sync.endpoint;
 import java.io.File;
 import java.io.FileOutputStream;
 
+import org.duracloud.client.MonitoredFile;
 import org.duracloud.integration.sync.SyncIntegrationTestBase;
 import org.duracloud.sync.endpoint.DuraStoreChunkSyncEndpoint;
-import org.duracloud.sync.endpoint.MonitoredFile;
 
 /**
  * @author: Bill Branan

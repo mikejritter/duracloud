@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.duracloud.client.ContentStore;
+import org.duracloud.client.MonitoredFile;
 import org.duracloud.common.model.AclType;
 import org.duracloud.common.util.ChecksumUtil;
 import org.duracloud.common.util.ChecksumUtil.Algorithm;

@@ -10,7 +10,7 @@ package org.duracloud.syncui.service;
 import java.io.File;
 import java.util.List;
 
-import org.duracloud.sync.endpoint.MonitoredFile;
+import org.duracloud.client.MonitoredFile;
 import org.duracloud.sync.mgmt.SyncSummary;
 
 /**

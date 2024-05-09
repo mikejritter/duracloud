@@ -10,7 +10,7 @@ package org.duracloud.sync.mgmt;
 import java.io.File;
 import java.util.Date;
 
-import org.duracloud.sync.endpoint.MonitoredFile;
+import org.duracloud.client.MonitoredFile;
 import org.duracloud.sync.endpoint.SyncEndpoint;
 import org.duracloud.sync.endpoint.SyncResultType;
 import org.slf4j.Logger;
