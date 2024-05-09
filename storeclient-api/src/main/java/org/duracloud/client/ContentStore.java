@@ -223,7 +223,7 @@ public interface ContentStore {
 
     /**
      * Adds content to a space. The contentId of the new content item can
-     * include "/" symbols to indicate a folder heirarchy.
+     * include "/" symbols to indicate a folder hierarchy.
      * Returns the checksum of the content as computed by the
      * underlying storage provider to facilitate comparison
      *
