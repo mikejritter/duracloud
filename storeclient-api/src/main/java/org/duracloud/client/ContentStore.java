@@ -407,7 +407,7 @@ public interface ContentStore {
 
     /**
      * Gets a listing of the supported tasks. A task is an activity which is
-     * outside of the standard set of storage activites but is available
+     * outside of the standard set of storage activities but is available
      * through one or more storage providers.
      *
      * @return the return value of the task
