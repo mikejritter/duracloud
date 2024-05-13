@@ -170,10 +170,10 @@ public class ChunkingContentStoreImpl extends ContentStoreImpl {
                                               Map<String, String> contentProperties,
                                               List<AddContentResult> results) {
         final var manifest = chunkedContent.finalizeManifest();
-        final var errorsExist = results.stream()
-                                       .noneMatch(result -> result.getState() != AddContentResult.State.SUCCESS);
+        final var success = results.stream()
+            .allMatch(result -> result.getState() == AddContentResult.State.SUCCESS);
 
-        if (!errorsExist) {
+        if (success) {
             final var manifestId = manifest.getManifestId();
             try (final var manifestBody = manifest.getBody()) {
                 final var manifestChecksum = checksumUtil.generateChecksum(manifest.getBody());
