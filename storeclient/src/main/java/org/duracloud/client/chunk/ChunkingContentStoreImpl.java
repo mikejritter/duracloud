@@ -7,11 +7,15 @@
  */
 package org.duracloud.client.chunk;
 
+import static java.text.MessageFormat.format;
+import static org.duracloud.chunk.manifest.ChunksManifest.manifestSuffix;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -63,57 +67,59 @@ public class ChunkingContentStoreImpl extends ContentStoreImpl {
                              final String contentChecksum,
                              final Map<String, String> contentProperties)
         throws ContentStoreException {
-        return chunkContent(spaceId, contentId, content, contentSize, contentMimeType, contentChecksum,
-                            contentProperties);
+
+        final var maxChunkSize = options.getMaxChunkSize();
+        if (contentSize <= maxChunkSize) {
+            final var md5 = super.addContent(spaceId,
+                                             contentId,
+                                             content,
+                                             contentSize,
+                                             contentMimeType,
+                                             contentChecksum,
+                                             contentProperties);
+            checkForChunkedContent(spaceId, contentId);
+            return md5;
+        } else {
+            return chunkContent(spaceId, contentId, content, contentSize, contentChecksum, contentProperties);
+        }
     }
 
     private String chunkContent(final String spaceId,
                                 final String contentId,
                                 final InputStream content,
                                 final long contentSize,
-                                final String contentMimeType,
                                 final String contentChecksum,
                                 final Map<String, String> contentProperties) throws ContentStoreException {
-        final var maxChunkSize = options.getMaxChunkSize();
-
         // todo: do we want to keep these boolean values? should they be default true for the client?
+        final var maxChunkSize = options.getMaxChunkSize();
         final var ignoreLargeFiles = options.isIgnoreLargeFiles();
         final var preserveChunkMD5s = options.isPreserveChunkMD5s();
 
         // log.debug("loading file: " + destContentId + "[" + fileSize + "]");
-        if (contentSize <= maxChunkSize) {
-            super.addContent(spaceId,
-                             contentId,
-                             content,
-                             contentSize,
-                             contentMimeType,
-                             contentChecksum,
-                             contentProperties);
-        } else if (!ignoreLargeFiles) {
-            ChunkableContent chunkedContent = new ChunkableContent(contentId,
-                                                              content,
-                                                              contentSize,
-                                                              maxChunkSize);
+        if (!ignoreLargeFiles) {
+            final var chunkedContent = new ChunkableContent(contentId, content, contentSize, maxChunkSize);
             chunkedContent.setPreserveChunkMD5s(preserveChunkMD5s);
             final var results = addChunkableContent(spaceId, chunkedContent, contentProperties);
+            final var manifest = addChunkManifest(chunkedContent, spaceId, contentProperties, results);
 
-            addChunkManifest(chunkedContent, spaceId, contentProperties, results);
-
-            // todo: return finalChecksum?
+            // before or after finalChecksum verify?
+            cleanupOrphanedChunks(spaceId, contentId, results, manifest);
 
             // Verify final checksum
-            // Push to ContentStore
+            String finalChecksum = "";
             if (contentChecksum != null) {
-                String finalChecksum = chunkedContent.getManifest().getHeader().getSourceMD5();
+                finalChecksum = chunkedContent.getManifest().getHeader().getSourceMD5();
                 if (!contentChecksum.equals(finalChecksum)) {
                     String err = "Final checksum of chunked content " + finalChecksum +
                                  " does not match provided checksum " + contentChecksum;
                     throw new DuraCloudRuntimeException(err);
                 }
             }
+
+            return finalChecksum;
         } else {
+            // todo: anything to do for ignored files? or do we want to autochunk?
             log.info("Ignoring: [" + contentId + "] (file too large)");
-            // contentWriter.ignore(destSpaceId, destContentId, fileSize);
         }
 
         return "";
@@ -205,7 +211,7 @@ public class ChunkingContentStoreImpl extends ContentStoreImpl {
                     deleteContent(spaceId, contentId);
                 }
             } catch (ContentStoreException e) {
-                log.warn("Failed to delete formerly unchunked content  item {} in space {}.", contentId, spaceId, e);
+                log.warn("Failed to delete formerly unchunked content item {} in space {}.", contentId, spaceId, e);
             }
         }
 
