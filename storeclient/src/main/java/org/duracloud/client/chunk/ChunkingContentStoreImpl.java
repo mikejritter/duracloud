@@ -1,10 +1,16 @@
+/*
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ *     http://duracloud.org/license/
+ */
 package org.duracloud.client.chunk;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +20,6 @@ import org.duracloud.chunk.ChunkableContent;
 import org.duracloud.chunk.FileChunkerOptions;
 import org.duracloud.chunk.manifest.ChunksManifest;
 import org.duracloud.chunk.stream.ChunkInputStream;
-import org.duracloud.chunk.stream.KnownLengthInputStream;
 import org.duracloud.chunk.util.ChunkUtil;
 import org.duracloud.chunk.writer.AddContentResult;
 import org.duracloud.client.ContentStore;
@@ -38,8 +43,8 @@ public class ChunkingContentStoreImpl extends ContentStoreImpl {
     private final ChecksumUtil checksumUtil = new ChecksumUtil(ChecksumUtil.Algorithm.MD5);
 
     public ChunkingContentStoreImpl(String baseURL, StorageProviderType type, String storeId,
-                                    boolean writable, RestHttpHelper restHelper) {
-        super(baseURL, type, storeId, writable, restHelper);
+                                    boolean writable, RestHttpHelper restHelper, int maxRetries) {
+        super(baseURL, type, storeId, writable, restHelper, maxRetries);
         options = new FileChunkerOptions();
     }
 
@@ -70,6 +75,8 @@ public class ChunkingContentStoreImpl extends ContentStoreImpl {
                                 final String contentChecksum,
                                 final Map<String, String> contentProperties) throws ContentStoreException {
         final var maxChunkSize = options.getMaxChunkSize();
+
+        // todo: do we want to keep these boolean values? should they be default true for the client?
         final var ignoreLargeFiles = options.isIgnoreLargeFiles();
         final var preserveChunkMD5s = options.isPreserveChunkMD5s();
 
@@ -90,8 +97,7 @@ public class ChunkingContentStoreImpl extends ContentStoreImpl {
             chunkedContent.setPreserveChunkMD5s(preserveChunkMD5s);
             final var results = addChunkableContent(spaceId, chunkedContent, contentProperties);
 
-            // todo: errorsExists needs to be derived from the results off addChunkableContent
-            addChunkedManifest(chunkedContent, spaceId, contentProperties, results);
+            addChunkManifest(chunkedContent, spaceId, contentProperties, results);
 
             // todo: return finalChecksum?
 
@@ -117,6 +123,8 @@ public class ChunkingContentStoreImpl extends ContentStoreImpl {
                                                       final ChunkableContent content,
                                                       final Map<String, String> contentProperties) {
         final var results = new ArrayList<AddContentResult>();
+
+        // todo: how does this work if there's an error midway?
         for (final ChunkInputStream chunk: content) {
             final var chunkId = chunk.getChunkId();
             final var chunkSize = chunk.getChunkSize();
@@ -165,10 +173,10 @@ public class ChunkingContentStoreImpl extends ContentStoreImpl {
         return results;
     }
 
-    private ChunksManifest addChunkedManifest(ChunkableContent chunkedContent,
-                                              String spaceId,
-                                              Map<String, String> contentProperties,
-                                              List<AddContentResult> results) {
+    private ChunksManifest addChunkManifest(final ChunkableContent chunkedContent,
+                                            final String spaceId,
+                                            final Map<String, String> contentProperties,
+                                            final List<AddContentResult> results) {
         final var manifest = chunkedContent.finalizeManifest();
         final var success = results.stream()
             .allMatch(result -> result.getState() == AddContentResult.State.SUCCESS);
@@ -189,6 +197,7 @@ public class ChunkingContentStoreImpl extends ContentStoreImpl {
                 throw new DuraCloudRuntimeException(err, e);
             }
 
+            // todo: move to cleanup?
             //check if an unchunked version of the file exists and, if so delete it.
             final var contentId = new ChunkUtil().preChunkedContentId(manifestId);
             try {
@@ -224,7 +233,7 @@ public class ChunkingContentStoreImpl extends ContentStoreImpl {
             if (contentExists(spaceId, contentId)) { // dc file exists
                 var props = getContentProperties(spaceId, contentId);
                 final var dcChecksum = props.get(ContentStore.CONTENT_CHECKSUM);
-                // File exists in DuraCloud adn checksums match
+                // File exists in DuraCloud and checksums match
                 return null != checksum && checksum.equals(dcChecksum);
             } else {
                 return false; // File does not exist in DuraCloud
@@ -233,6 +242,5 @@ public class ChunkingContentStoreImpl extends ContentStoreImpl {
             return false; // File does not exist in DuraCloud
         }
     }
-
 
 }
