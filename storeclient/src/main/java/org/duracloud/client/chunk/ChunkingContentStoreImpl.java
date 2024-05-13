@@ -243,4 +243,55 @@ public class ChunkingContentStoreImpl extends ContentStoreImpl {
         }
     }
 
+    public void checkForChunkedContent(final String spaceId, final String contentId) throws ContentStoreException {
+        final var chunkedContentIdIt = getSpaceContents(spaceId, contentId + ".dura-");
+        if (chunkedContentIdIt.hasNext()) {
+            log.info("A chunked version was replaced by an unchunked version of {}/{}", spaceId, contentId);
+            chunkedContentIdIt.forEachRemaining(chunkId -> {
+                cleanupContent(spaceId, chunkId);
+            });
+            log.info("Deleted manifest and all chunks associated with {}/{} " +
+                     "because the chunked file was replaced by an unchunked file with " +
+                     "the same name.",
+                     spaceId, contentId);
+        }
+    }
+
+    public void cleanupOrphanedChunks(final String spaceId,
+                                      final String contentId,
+                                      final List<AddContentResult> results,
+                                      final ChunksManifest manifest) throws ContentStoreException {
+        log.debug("Checking for orphaned chunks associated with {}/{}", spaceId, contentId);
+
+        //resolve the set of the chunks in the manifest
+        final var manifestChunks = new HashSet<String>();
+        manifest.getEntries().forEach(entry -> manifestChunks.add(entry.getChunkId()));
+        //for each chunk in storage, delete if not in the manifest.
+        results.stream()
+               .filter(chunkedContentId -> !chunkedContentId.getContentId().endsWith(manifestSuffix))
+               .forEach(chunk -> {
+                   if (!manifestChunks.contains(chunk.getContentId())) {
+                       log.debug("Chunk not found in manifest: deleting orphaned chunk ({}/{})", spaceId, chunk);
+                       cleanupContent(spaceId, chunk.getContentId());
+                   }
+               });
+
+        //check for an unchunked version and remove it if happens to exist.
+        if (contentExists(spaceId, contentId)) {
+            cleanupContent(spaceId, contentId);
+        }
+    }
+
+    private void cleanupContent(String spaceId, String contentId) {
+        try {
+            deleteContent(spaceId, contentId);
+            log.debug("Deleted content  ({}/{})", spaceId, contentId);
+        } catch (Exception ex) {
+            final String message = format("Failed to delete content ({0}/{1}) due to {2}." +
+                                          " As this is a non-critical failure, processing will " +
+                                          "continue on.", spaceId, contentId, ex.getMessage());
+            log.error(message, ex);
+        }
+    }
+
 }
