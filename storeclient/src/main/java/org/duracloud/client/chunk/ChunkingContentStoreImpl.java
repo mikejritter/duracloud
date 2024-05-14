@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class ChunkingContentStoreImpl extends ContentStoreImpl {
-    private static final Logger log = LoggerFactory.getLogger(ChunkHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(ChunkingContentStoreImpl.class);
 
     private final FileChunkerOptions options;
     private final ChecksumUtil checksumUtil = new ChecksumUtil(ChecksumUtil.Algorithm.MD5);
